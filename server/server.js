@@ -42,8 +42,18 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  console.error('Error Stack:', err.stack);
+  console.error('Error Message:', err.message);
+  
+  // Handle Multer/Cloudinary specific errors
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ message: `Upload error: ${err.message}` });
+  }
+
+  res.status(err.status || 500).json({ 
+    message: err.message || 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 // Create uploads directory if it doesn't exist

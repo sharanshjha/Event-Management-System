@@ -38,7 +38,7 @@ router.post('/products', protect, vendorOnly, upload.single('image'), async (req
       name,
       price,
       description: description || '',
-      image: req.file ? req.file.path : '',
+      image: req.file ? (req.file.path || req.file.secure_url || req.file.url || '') : '',
       vendorId: req.user._id,
       status: 'active'
     });
@@ -67,7 +67,7 @@ router.put('/products/:id', protect, vendorOnly, upload.single('image'), async (
     product.status = status || product.status;
     
     if (req.file) {
-      product.image = req.file.path;
+      product.image = req.file.path || req.file.secure_url || req.file.url || product.image;
     }
 
     await product.save();

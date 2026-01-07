@@ -72,7 +72,11 @@ const VendorProducts = () => {
             <div key={product._id} className="product-card">
               <div className="product-image">
                 {product.image ? (
-                  <img src={product.image.startsWith('http') ? product.image : `http://localhost:5001${product.image}`} alt={product.name} />
+                  <img 
+                    src={product.image.startsWith('http') ? product.image : `http://localhost:5001/${product.image.replace(/\\/g, '/')}`} 
+                    alt={product.name} 
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/300x200?text=Error+Loading+Image' }}
+                  />
                 ) : (
                   <div className="no-image">📦</div>
                 )}

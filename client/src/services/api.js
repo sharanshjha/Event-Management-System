@@ -79,25 +79,31 @@ export const adminApi = {
 // Vendor API
 export const vendorApi = {
   getProducts: () => fetchApi('/vendor/products'),
-  addProduct: (formData) => {
+  addProduct: async (formData) => {
     const token = localStorage.getItem('token');
-    return fetch(`${API_URL}/vendor/products`, {
+    const response = await fetch(`${API_URL}/vendor/products`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
       body: formData,
-    }).then(res => res.json());
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Failed to add product');
+    return data;
   },
-  updateProduct: (id, formData) => {
+  updateProduct: async (id, formData) => {
     const token = localStorage.getItem('token');
-    return fetch(`${API_URL}/vendor/products/${id}`, {
+    const response = await fetch(`${API_URL}/vendor/products/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
       body: formData,
-    }).then(res => res.json());
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Failed to update product');
+    return data;
   },
   deleteProduct: (id) => fetchApi(`/vendor/products/${id}`, { method: 'DELETE' }),
   getProductStatus: () => fetchApi('/vendor/product-status'),

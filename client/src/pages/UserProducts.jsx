@@ -58,9 +58,10 @@ const UserProducts = () => {
           {filteredProducts.map(product => (
             <div key={product._id} className="product-card">
               <img
-                src={product.image ? (product.image.startsWith('http') ? product.image : `http://localhost:5001${product.image}`) : 'https://via.placeholder.com/300x200?text=No+Image'}
+                src={product.image ? (product.image.startsWith('http') ? product.image : `http://localhost:5001/${product.image.replace(/\\/g, '/')}`) : 'https://via.placeholder.com/300x200?text=No+Image'}
                 alt={product.name}
                 className="product-image"
+                onError={(e) => { e.target.src = 'https://via.placeholder.com/300x200?text=Error+Loading+Image' }}
               />
               <div className="product-info">
                 <h3 className="product-name">{product.name}</h3>
