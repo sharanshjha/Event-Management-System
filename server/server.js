@@ -11,10 +11,15 @@ const adminRoutes = require('./routes/admin');
 const vendorRoutes = require('./routes/vendor');
 const userRoutes = require('./routes/user');
 
-const app = express();
-
 // Connect to MongoDB
 connectDB();
+
+const app = express();
+
+// Root route for deployment verification
+app.get('/', (req, res) => {
+  res.send('Event Management API is running! Access the frontend at your Netlify URL.');
+});
 
 // Middleware
 app.use(cors());

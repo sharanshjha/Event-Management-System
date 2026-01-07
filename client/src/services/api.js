@@ -20,7 +20,16 @@ const fetchApi = async (endpoint, options = {}) => {
     },
   });
   
-  const data = await response.json();
+  const contentType = response.headers.get('content-type');
+  let data;
+  
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+    console.error('Non-JSON response received:', text);
+    throw new Error(`Server returned non-JSON response (HTML/Text). Check if VITE_API_URL is correct: ${API_URL}`);
+  }
   
   if (!response.ok) {
     throw new Error(data.message || 'Something went wrong');
