@@ -1,0 +1,51 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+// Protect routes - verify JWT token
+const protect = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id).select('-password');
+      next();
+    } catch (error) {
+      res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+  }
+
+  if (!token) {
+    res.status(401).json({ message: 'Not authorized, no token' });
+  }
+};
+
+// Admin only middleware
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Admin only.' });
+  }
+};
+
+// Vendor only middleware
+const vendorOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'vendor') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Vendor only.' });
+  }
+};
+
+// User only middleware
+const userOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'user') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. User only.' });
+  }
+};
+
+module.exports = { protect, adminOnly, vendorOnly, userOnly };
