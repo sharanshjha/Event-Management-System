@@ -1,138 +1,168 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { vendorApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
 const VendorProducts = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [editData, setEditData] = useState({ name: '', price: '', description: '' });
+    const { user } = useAuth();
+    const [products, setProducts] = useState([]);
+    const [formData, setFormData] = useState({ name: '', price: '', description: '', _id: null });
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
+    useEffect(() => {
+        loadProducts();
+    }, []);
 
-  const loadProducts = async () => {
-    try {
-      const data = await vendorApi.getProducts();
-      setProducts(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadProducts = async () => {
+        try {
+            const data = await vendorApi.getProducts();
+            setProducts(data);
+        } catch (err) {
+            console.error('Failed to load products');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-    try {
-      await vendorApi.deleteProduct(id);
-      setProducts(products.filter(p => p._id !== id));
-    } catch (err) {
-      alert('Failed to delete product: ' + err.message);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (formData._id) {
+                await vendorApi.updateProduct(formData._id, formData);
+                alert('Item updated successfully!');
+            } else {
+                const productData = {
+                    ...formData,
+                    category: user?.category || 'General'
+                };
+                delete productData._id; // Remove null _id for new products
+                await vendorApi.addProduct(productData);
+                alert('Item added successfully!');
+            }
+            setFormData({ name: '', price: '', description: '', _id: null });
+            loadProducts();
+        } catch (err) {
+            console.error('Error:', err);
+            alert('Operation failed: ' + err.message);
+        }
+    };
 
-  const openEditModal = (product) => {
-    setEditingProduct(product);
-    setEditData({
-      name: product.name,
-      price: product.price,
-      description: product.description || ''
-    });
-  };
+    const handleEdit = (product) => {
+        setFormData({
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            _id: product._id
+        });
+    };
 
-  const handleUpdate = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('name', editData.name);
-      formData.append('price', editData.price);
-      formData.append('description', editData.description);
-      
-      await vendorApi.updateProduct(editingProduct._id, formData);
-      await loadProducts();
-      setEditingProduct(null);
-      alert('Product updated successfully!');
-    } catch (err) {
-      alert('Failed to update product: ' + err.message);
-    }
-  };
+    const handleDelete = async (id) => {
+        if (window.confirm('Delete this item?')) {
+            try {
+                await vendorApi.deleteProduct(id);
+                loadProducts();
+            } catch (err) {
+                alert('Delete failed');
+            }
+        }
+    };
 
-  if (loading) return <div className="loading">Loading products...</div>;
-
-  return (
-    <div className="admin-section">
-      <h2>My Products</h2>
-      
-      <div className="products-grid">
-        {products.length === 0 ? (
-          <p className="no-data">No products found. Add your first product!</p>
-        ) : (
-          products.map(product => (
-            <div key={product._id} className="product-card">
-              <div className="product-image">
-                {product.image ? (
-                  <img 
-                    src={product.image.startsWith('http') ? product.image : `http://localhost:5001/${product.image.replace(/\\/g, '/')}`} 
-                    alt={product.name} 
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/300x200?text=Error+Loading+Image' }}
-                  />
-                ) : (
-                  <div className="no-image">📦</div>
-                )}
-              </div>
-              <div className="product-info">
-                <h3>{product.name}</h3>
-                <p className="product-price">₹{product.price}</p>
-                <p className="product-desc">{product.description || 'No description'}</p>
-                <span className={`status-badge ${product.status}`}>{product.status}</span>
-              </div>
-              <div className="product-actions">
-                <button onClick={() => openEditModal(product)} className="btn-edit">Update</button>
-                <button onClick={() => handleDelete(product._id)} className="btn-delete">Delete</button>
-              </div>
+    return (
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+            {/* Sidebar Form (Blue) */}
+            <div style={{ width: '350px', background: '#4a76c5', padding: '40px 20px', color: 'white' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '40px' }}>{formData._id ? 'Update Item' : 'Add Item'}</h2>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                        <label>Item Name</label>
+                        <input 
+                            className="form-input"
+                            style={sidebarInputStyle} 
+                            value={formData.name} 
+                            onChange={e => setFormData({...formData, name: e.target.value})} 
+                            required 
+                        />
+                    </div>
+                    <div>
+                        <label>Item Price</label>
+                        <input 
+                            className="form-input"
+                            style={sidebarInputStyle} 
+                            type="number"
+                            value={formData.price} 
+                            onChange={e => setFormData({...formData, price: e.target.value})} 
+                            required 
+                        />
+                    </div>
+                    <div>
+                        <label>Description</label>
+                        <textarea 
+                            className="form-input"
+                            style={{...sidebarInputStyle, height: '100px', resize: 'none'}} 
+                            value={formData.description} 
+                            onChange={e => setFormData({...formData, description: e.target.value})} 
+                        />
+                    </div>
+                    <button type="submit" style={sidebarBtnStyle}>
+                        {formData._id ? 'Update' : 'Add'}
+                    </button>
+                    {formData._id && (
+                        <button type="button" onClick={() => setFormData({name: '', price: '', description: '', _id: null})} style={{...sidebarBtnStyle, background: '#666'}}>
+                            Cancel
+                        </button>
+                    )}
+                </form>
             </div>
-          ))
-        )}
-      </div>
 
-      {editingProduct && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Update Product</h3>
-            <div className="form-group">
-              <label>Name</label>
-              <input
-                type="text"
-                value={editData.name}
-                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-              />
+            {/* Main Content (Grey) */}
+            <div className="page-shell" style={{ flex: 1, background: '#e0e0e0', padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button style={topBtnStyle} onClick={() => navigate('/vendor')}>Home</button>
+                        <button style={topBtnStyle} onClick={() => navigate('/vendor/product-status')}>Product Status</button>
+                        <button style={topBtnStyle} onClick={() => navigate('/vendor/transactions')}>Request Item</button>
+                    </div>
+                    <button style={topBtnStyle} onClick={() => { localStorage.clear(); navigate('/login'); }}>LogOut</button>
+                </div>
+
+                <div style={{ background: 'white', padding: '20px', borderRadius: '5px' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                            <tr style={{ background: '#4a76c5', color: 'white' }}>
+                                <th style={thStyle}>Name</th>
+                                <th style={thStyle}>Price</th>
+                                <th style={thStyle}>Update</th>
+                                <th style={thStyle}>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {products.map(p => (
+                                <tr key={p._id} style={{ borderBottom: '1px solid #ddd' }}>
+                                    <td style={tdStyle}>{p.name}</td>
+                                    <td style={tdStyle}>{p.price}/-</td>
+                                    <td style={tdStyle}>
+                                        <button onClick={() => handleEdit(p)} style={actionBtnStyle}>Update</button>
+                                    </td>
+                                    <td style={tdStyle}>
+                                        <button onClick={() => handleDelete(p._id)} style={actionBtnStyle}>Delete</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div className="form-group">
-              <label>Price (₹)</label>
-              <input
-                type="number"
-                value={editData.price}
-                onChange={(e) => setEditData({ ...editData, price: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                value={editData.description}
-                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                rows="3"
-              />
-            </div>
-            <div className="modal-actions">
-              <button onClick={handleUpdate} className="btn-save">Update</button>
-              <button onClick={() => setEditingProduct(null)} className="btn-cancel">Cancel</button>
-            </div>
-          </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
+
+const sidebarInputStyle = { width: '100%', padding: '10px', borderRadius: '5px', border: 'none', marginTop: '5px' };
+const sidebarBtnStyle = { background: 'white', color: '#4a76c5', border: 'none', padding: '12px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' };
+const topBtnStyle = { background: 'white', border: '1px solid #4a76c5', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' };
+const thStyle = { padding: '15px', textAlign: 'left', color: 'white' };
+const tdStyle = { padding: '15px', textAlign: 'left' };
+const actionBtnStyle = { background: '#4a76c5', color: 'white', border: 'none', padding: '5px 15px', borderRadius: '3px', cursor: 'pointer' };
 
 export default VendorProducts;

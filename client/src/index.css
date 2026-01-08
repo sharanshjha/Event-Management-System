@@ -78,13 +78,142 @@
   font-family: var(--font-primary);
   line-height: 1.6;
   font-weight: 400;
-  color-scheme: dark;
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
+  color-scheme: light;
+  color: #333;
+  background-color: #f5f5f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Mode Variables */
+:root.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1e1e1e;
+  --bg-card: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --border-color: rgba(255, 255, 255, 0.1);
+  color-scheme: dark;
+}
+
+/* Global Dark Mode Overrides */
+.dark-mode body {
+  background: #121212 !important;
+  color: #ffffff !important;
+}
+
+/* Base text color for all elements in dark mode */
+.dark-mode td, 
+.dark-mode th,
+.dark-mode span, 
+.dark-mode p, 
+.dark-mode label, 
+.dark-mode div:not([style*="background: #4a76c5"]),
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4 {
+  color: #ffffff !important;
+}
+
+/* Helper Classes for specific overrides */
+.dark-mode .page-shell {
+  background: #121212 !important;
+}
+
+.dark-mode .card-container {
+  background: #1e1e1e !important;
+  color: #ffffff !important;
+  border: 1px solid #333 !important;
+}
+
+.dark-mode .table-row-white {
+  background: #1e1e1e !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+.dark-mode .form-input {
+  background: #333 !important;
+  color: #ffffff !important;
+  border: 1px solid #4a76c5 !important;
+}
+
+/* Override common grey/white backgrounds used in Page shells and tables */
+.dark-mode div[style*="background: rgb(224, 224, 224)"],
+.dark-mode div[style*="background: #e0e0e0"],
+.dark-mode div[style*="background: #f5f5f5"],
+.dark-mode div[style*="background: #d0d0d0"],
+.dark-mode div[style*="background: rgb(208, 208, 208)"],
+.dark-mode div[style*="background: white"],
+.dark-mode div[style*="background: #ffffff"],
+.dark-mode td[style*="background: #f5f5f5"],
+.dark-mode td[style*="background: rgb(245, 245, 245)"],
+.dark-mode td[style*="background: white"],
+.dark-mode td[style*="background: #ffffff"] {
+  background: #121212 !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+/* Specifically for banners or items within page shells that should be slightly lighter */
+.dark-mode .welcome-banner,
+.dark-mode .card-container,
+.dark-mode div[style*="background: #c5d9f1"],
+.dark-mode div[style*="background: rgb(197, 217, 241)"] {
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
+  color: #ffffff !important;
+}
+
+/* Force text visibility for items with inline dark colors */
+.dark-mode *[style*="color: #333"],
+.dark-mode *[style*="color: rgb(51, 51, 51)"],
+.dark-mode *[style*="color: #4a76c5"],
+.dark-mode *[style*="color: rgb(74, 118, 197)"],
+.dark-mode *[style*="color: #666"],
+.dark-mode *[style*="color: rgb(102, 102, 102)"] {
+  color: #ffffff !important;
+}
+
+/* Form Elements */
+.dark-mode input, 
+.dark-mode select, 
+.dark-mode textarea {
+  background: #333 !important;
+  color: #ffffff !important;
+  border-color: #4a76c5 !important;
+}
+
+.dark-mode input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Buttons and specific interaction elements */
+.dark-mode button[style*="background: white"],
+.dark-mode button[style*="background: #ffffff"],
+.dark-mode button[style*="background: #e0e0e0"],
+.dark-mode button[style*="background: rgb(224, 224, 224)"] {
+  background: #333 !important;
+  color: #ffffff !important;
+  border: 1px solid #4a76c5 !important;
+}
+
+/* Status markers / specific boxes */
+.dark-mode div[style*="background: #c5d9f1"] {
+  background: #2c3e50 !important;
+  color: #ffffff !important;
+}
+
+/* Scrollbar in dark mode */
+.dark-mode ::-webkit-scrollbar-track {
+  background: #0a0a0a !important;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #333 !important;
 }
 
 /* Reset & Base Styles */

@@ -1,90 +1,92 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { vendorApi } from '../services/api';
+import Watermark from '../components/Watermark';
 import './Dashboard.css';
 
 const VendorDashboard = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [stats, setStats] = useState(null);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user || user.role !== 'vendor') {
-      navigate('/login');
-      return;
-    }
-    loadStats();
-  }, [user, navigate]);
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
-  const loadStats = async () => {
-    try {
-      const data = await vendorApi.getProductStatus();
-      setStats(data);
-    } catch (err) {
-      console.error('Failed to load stats:', err);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const isActive = (path) => location.pathname === path;
-
-  return (
-    <div className="dashboard">
-      <nav className="dashboard-nav">
-        <div className="nav-brand">
-          <h1>Event Management</h1>
-          <span className="role-badge vendor">Vendor Portal</span>
-        </div>
-        <div className="nav-links">
-          <Link to="/vendor" className={isActive('/vendor') ? 'active' : ''}>Dashboard</Link>
-          <Link to="/vendor/add-product" className={isActive('/vendor/add-product') ? 'active' : ''}>Add Product</Link>
-          <Link to="/vendor/products" className={isActive('/vendor/products') ? 'active' : ''}>My Products</Link>
-          <Link to="/vendor/product-status" className={isActive('/vendor/product-status') ? 'active' : ''}>Product Status</Link>
-          <Link to="/vendor/request-item" className={isActive('/vendor/request-item') ? 'active' : ''}>Request Item</Link>
-          <Link to="/vendor/transactions" className={isActive('/vendor/transactions') ? 'active' : ''}>Transactions</Link>
-        </div>
-        <div className="nav-user">
-          <span>Welcome, {user?.name}</span>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        </div>
-      </nav>
-
-      <main className="dashboard-content">
-        {location.pathname === '/vendor' && stats && (
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-icon products-icon">📦</div>
-              <div className="stat-info">
-                <h3>{stats.total}</h3>
-                <p>Total Products</p>
-              </div>
+    return (
+        <div className="dashboard-simple-container page-shell" style={{ 
+            background: '#4a76c5', 
+            minHeight: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            padding: '20px'
+        }}>
+            <div className="welcome-banner" style={{
+                background: '#e0e0e0',
+                padding: '20px 100px',
+                borderRadius: '5px',
+                marginBottom: '50px',
+                width: '80%',
+                textAlign: 'center',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+            }}>
+                <h1 style={{ fontSize: '2rem' }}>Welcome Vendor</h1>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon active-icon">✅</div>
-              <div className="stat-info">
-                <h3>{stats.active}</h3>
-                <p>Active Products</p>
-              </div>
+
+            <div className="vendor-actions-grid" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '20px',
+                width: '90%',
+                maxWidth: '1000px'
+            }}>
+                <button 
+                    className="pdf-style-btn" 
+                    onClick={() => navigate('/vendor/products')}
+                    style={btnStyle}
+                >
+                    Your Item
+                </button>
+                <button 
+                    className="pdf-style-btn" 
+                    onClick={() => navigate('/vendor/products')}
+                    style={btnStyle}
+                >
+                    Add New Item
+                </button>
+                <button 
+                    className="pdf-style-btn" 
+                    onClick={() => navigate('/vendor/transactions')}
+                    style={btnStyle}
+                >
+                    Transaction
+                </button>
+                <button 
+                    className="pdf-style-btn" 
+                    onClick={handleLogout}
+                    style={btnStyle}
+                >
+                    LogOut
+                </button>
             </div>
-            <div className="stat-card">
-              <div className="stat-icon pending-icon">⏳</div>
-              <div className="stat-info">
-                <h3>{stats.pending}</h3>
-                <p>Pending Products</p>
-              </div>
+            <div style={{ marginTop: '50px' }}>
+                <Watermark />
             </div>
-          </div>
-        )}
-        <Outlet />
-      </main>
-    </div>
-  );
+        </div>
+    );
+};
+
+const btnStyle = {
+    background: '#e0e0e0',
+    border: 'none',
+    padding: '15px 10px',
+    borderRadius: '10px',
+    fontSize: '1.2rem',
+    fontWeight: '500',
+    cursor: 'pointer',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    transition: 'transform 0.1s'
 };
 
 export default VendorDashboard;

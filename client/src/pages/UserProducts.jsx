@@ -7,8 +7,11 @@ const UserProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const { addToCart } = useCart();
   const [addedProduct, setAddedProduct] = useState(null);
+
+  const categories = ['All', 'Catering', 'Florist', 'Decoration', 'Lighting'];
 
   useEffect(() => {
     loadProducts();
@@ -19,7 +22,7 @@ const UserProducts = () => {
       const data = await userApi.getProducts();
       setProducts(data);
     } catch (err) {
-      console.error('Failed to load products:', err);
+      console.error('Failed to load services:', err);
     } finally {
       setLoading(false);
     }
@@ -31,25 +34,40 @@ const UserProducts = () => {
     setTimeout(() => setAddedProduct(null), 2000);
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
-    return <div className="loading">Loading products...</div>;
+    return <div className="loading">Loading services...</div>;
   }
 
   return (
     <div>
       <div className="content-card">
-        <h2>Browse Products</h2>
-        <div className="form-group" style={{ marginBottom: '2rem' }}>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <h2>Browse Event Services</h2>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="form-group" style={{ flex: 2, minWidth: '200px' }}>
+            <input
+              type="text"
+              placeholder="Search services..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="form-group" style={{ flex: 1, minWidth: '150px' }}>
+            <select 
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{ width: '100%', padding: '0.85rem', background: 'rgba(255,255,255,0.03)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

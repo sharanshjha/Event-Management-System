@@ -1,135 +1,92 @@
 import { useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 const Signup = () => {
-  const { role } = useParams();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
-  const navigate = useNavigate();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState('user');
+    const [category, setCategory] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { signup } = useAuth();
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill all fields');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-    
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-    
-    setLoading(true);
-    setError('');
-    
-    try {
-      const user = await signup({ name, email, password, role: role || 'user' });
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else if (user.role === 'vendor') {
-        navigate('/vendor');
-      } else {
-        navigate('/user');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        try {
+            await signup({ name, email, password, role, category });
+            navigate(role === 'vendor' ? '/vendor' : '/user');
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const getRoleTitle = () => {
-    switch (role) {
-      case 'admin': return 'Admin';
-      case 'vendor': return 'Vendor';
-      default: return 'User';
-    }
-  };
+    return (
+        <div style={{ background: '#4a76c5', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <h1 style={{ color: 'white', marginBottom: '40px', fontSize: '2.5rem', textAlign: 'center' }}>Welcome To Event Management System</h1>
+            
+            <div className="card-container" style={{ background: '#e0e0e0', padding: '40px', borderRadius: '10px', width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ background: '#4a76c5', color: 'white', padding: '10px 40px', borderRadius: '5px', fontSize: '1.2rem', marginBottom: '30px', textAlign: 'center' }}>
+                    {role === 'user' ? 'Signup User' : 'Vender Sign Up'}
+                </div>
 
-  return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>Event Management System</h1>
-          <h2>{getRoleTitle()} Registration</h2>
+                {error && <p style={{ color: 'red', marginBottom: '20px' }}>{error}</p>}
+
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                    <button onClick={() => setRole('user')} style={{...roleBtnStyle, background: role === 'user' ? '#4a76c5' : 'white', color: role === 'user' ? 'white' : '#333'}}>User</button>
+                    <button onClick={() => setRole('vendor')} style={{...roleBtnStyle, background: role === 'vendor' ? '#4a76c5' : 'white', color: role === 'vendor' ? 'white' : '#333'}}>Vendor</button>
+                </div>
+
+                <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <div style={inputGroupStyle}>
+                        <label style={labelStyle}>Name</label>
+                        <input className="form-input" style={inputStyle} value={name} onChange={e => setName(e.target.value)} required />
+                    </div>
+                    <div style={inputGroupStyle}>
+                        <label style={labelStyle}>E-mail</label>
+                        <input className="form-input" type="email" style={inputStyle} value={email} onChange={e => setEmail(e.target.value)} required />
+                    </div>
+                    {role === 'vendor' && (
+                        <div style={inputGroupStyle}>
+                            <label style={labelStyle}>Category</label>
+                            <select className="form-input" style={inputStyle} value={category} onChange={e => setCategory(e.target.value)} required>
+                                <option value="">Select Category</option>
+                                <option value="Catering">Catering</option>
+                                <option value="Florist">Florist</option>
+                                <option value="Decoration">Decoration</option>
+                                <option value="Lighting">Lighting</option>
+                            </select>
+                        </div>
+                    )}
+                    <div style={inputGroupStyle}>
+                        <label style={labelStyle}>Password</label>
+                        <input className="form-input" type="password" style={inputStyle} value={password} onChange={e => setPassword(e.target.value)} required />
+                    </div>
+                    
+                    <button type="submit" style={signupBtnStyle} disabled={loading}>
+                        {loading ? '...' : 'Signup'}
+                    </button>
+                </form>
+
+                <p style={{ marginTop: '20px' }}>
+                    Already have an account? <Link to="/login" style={{ color: '#4a76c5' }}>Login</Link>
+                </p>
+            </div>
         </div>
-        
-        {error && <div className="auth-error">{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
-          
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-        
-        <div className="auth-footer">
-          <p>Already have an account?</p>
-          <Link to="/login">Login</Link>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
+
+const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '5px' };
+const labelStyle = { color: '#333', fontWeight: 'bold' };
+const inputStyle = { padding: '12px', borderRadius: '10px', border: '2px solid #4a76c5', fontSize: '1rem' };
+const roleBtnStyle = { padding: '8px 20px', borderRadius: '5px', border: '1px solid #4a76c5', cursor: 'pointer' };
+const signupBtnStyle = { background: '#4a76c5', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
 
 export default Signup;

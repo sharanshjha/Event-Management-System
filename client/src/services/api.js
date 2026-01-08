@@ -59,6 +59,10 @@ export const adminApi = {
   getVendors: () => fetchApi('/admin/vendors'),
   deleteUser: (id) => fetchApi(`/admin/users/${id}`, { method: 'DELETE' }),
   deleteVendor: (id) => fetchApi(`/admin/vendors/${id}`, { method: 'DELETE' }),
+  updateVendorMembership: (id, data) => fetchApi(`/admin/vendors/${id}/membership`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
   updateMembership: (id, data) => fetchApi(`/admin/vendors/${id}/membership`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -79,32 +83,14 @@ export const adminApi = {
 // Vendor API
 export const vendorApi = {
   getProducts: () => fetchApi('/vendor/products'),
-  addProduct: async (formData) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/vendor/products`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Failed to add product');
-    return data;
-  },
-  updateProduct: async (id, formData) => {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/vendor/products/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Failed to update product');
-    return data;
-  },
+  addProduct: (data) => fetchApi('/vendor/products', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  updateProduct: (id, data) => fetchApi(`/vendor/products/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
   deleteProduct: (id) => fetchApi(`/vendor/products/${id}`, { method: 'DELETE' }),
   getProductStatus: () => fetchApi('/vendor/product-status'),
   requestItem: (data) => fetchApi('/vendor/request-item', {
@@ -113,6 +99,11 @@ export const vendorApi = {
   }),
   getRequests: () => fetchApi('/vendor/requests'),
   getTransactions: () => fetchApi('/vendor/transactions'),
+  getOrders: () => fetchApi('/vendor/transactions'), // Alias for consistency
+  updateOrderStatus: (id, status) => fetchApi(`/vendor/orders/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
 };
 
 // User API
@@ -131,6 +122,14 @@ export const userApi = {
     body: JSON.stringify({ status: 'cancelled' }),
   }),
   deleteOrder: (id) => fetchApi(`/user/orders/${id}`, { method: 'DELETE' }),
+  getAddresses: () => fetchApi('/user/addresses'),
+  addAddress: (addressData) => fetchApi('/user/addresses', {
+    method: 'POST',
+    body: JSON.stringify(addressData),
+  }),
+  deleteAddress: (id) => fetchApi(`/user/addresses/${id}`, { method: 'DELETE' }),
+  getVendorsByCategory: (cat) => fetchApi(`/user/vendors/${cat}`),
+  getVendorProducts: (vendorId) => fetchApi(`/user/vendor-products/${vendorId}`),
 };
 
 export default fetchApi;

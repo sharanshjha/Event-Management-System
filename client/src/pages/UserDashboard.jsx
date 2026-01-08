@@ -1,132 +1,111 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
-import { userApi } from '../services/api';
+import Watermark from '../components/Watermark';
 import './Dashboard.css';
 
 const UserDashboard = () => {
-  const { user, logout } = useAuth();
-  const { getItemCount } = useCart();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [orders, setOrders] = useState([]);
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+    const [showVendorDropdown, setShowVendorDropdown] = useState(false);
 
-  useEffect(() => {
-    if (!user || user.role !== 'user') {
-      navigate('/login');
-      return;
-    }
-    loadOrders();
-  }, [user, navigate]);
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
-  const loadOrders = async () => {
-    try {
-      const data = await userApi.getOrders();
-      setOrders(data);
-    } catch (err) {
-      console.error('Failed to load orders:', err);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const isActive = (path) => location.pathname === path;
-
-  return (
-    <div className="dashboard">
-      <nav className="dashboard-nav">
-        <div className="nav-brand">
-          <h1>Event Management</h1>
-          <span className="role-badge user">User Portal</span>
-        </div>
-        <div className="nav-links">
-          <Link to="/user" className={isActive('/user') ? 'active' : ''}>Dashboard</Link>
-          <Link to="/user/products" className={isActive('/user/products') ? 'active' : ''}>Products</Link>
-          <Link to="/user/cart" className={isActive('/user/cart') ? 'active' : ''}>
-            Cart ({getItemCount()})
-          </Link>
-          <Link to="/user/orders" className={isActive('/user/orders') ? 'active' : ''}>My Orders</Link>
-        </div>
-        <div className="nav-user">
-          <span>Welcome, {user?.name}</span>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        </div>
-      </nav>
-
-      <main className="dashboard-content">
-        {location.pathname === '/user' && (
-          <>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon orders-icon">📦</div>
-                <div className="stat-info">
-                  <h3>{orders.length}</h3>
-                  <p>Total Orders</p>
+    return (
+        <div className="page-shell" style={{ background: '#e0e0e0', minHeight: '100vh', padding: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '80px' }}>
+                <div className="card-container" style={{ background: '#4a76c5', color: 'white', padding: '10px 80px', borderRadius: '5px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                    WELCOME USER
                 </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon pending-icon">⏳</div>
-                <div className="stat-info">
-                  <h3>{orders.filter(o => o.status === 'pending').length}</h3>
-                  <p>Pending Orders</p>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon active-icon">✅</div>
-                <div className="stat-info">
-                  <h3>{orders.filter(o => o.status === 'delivered').length}</h3>
-                  <p>Delivered</p>
-                </div>
-              </div>
             </div>
 
-            <div className="content-card">
-              <h2>Recent Orders</h2>
-              {orders.length > 0 ? (
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Items</th>
-                      <th>Total</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.slice(0, 5).map(order => (
-                      <tr key={order._id}>
-                        <td data-label="Order ID">{order._id.slice(-8)}</td>
-                        <td data-label="Items">{order.items?.length || 0} items</td>
-                        <td data-label="Total">₹{order.totalAmount}</td>
-                        <td data-label="Status">
-                          <span className={`status-badge ${order.status}`}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td data-label="Date">{new Date(order.createdAt).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="empty-state">
-                  <span style={{ fontSize: '3rem' }}>🛒</span>
-                  <h3>No orders yet</h3>
-                  <p>Start shopping to see your orders here</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginBottom: '40px' }}>
+                <div style={{ position: 'relative' }}>
+                    <button 
+                        style={btnStyle} 
+                        onClick={() => setShowVendorDropdown(!showVendorDropdown)}
+                    >
+                        Vendor
+                    </button>
+                    {showVendorDropdown && (
+                        <div style={{ 
+                            position: 'absolute', 
+                            top: '110%', 
+                            left: 0, 
+                            background: 'white', 
+                            border: '1px solid #4a76c5', 
+                            borderRadius: '5px',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            minWidth: '150px', 
+                            zIndex: 10,
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                        }}>
+                            {['Catering', 'Florist', 'Decoration', 'Lighting'].map(cat => (
+                                <button 
+                                    key={cat}
+                                    style={dropdownItemStyle}
+                                    onMouseEnter={(e) => e.target.style.background = '#f0f0f0'}
+                                    onMouseLeave={(e) => e.target.style.background = 'white'}
+                                    onClick={() => navigate(`/user/vendor/${cat}`)}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
-              )}
+                <button style={btnStyle} onClick={() => navigate('/user/cart')}>Cart</button>
+                <button style={btnStyle} onClick={() => navigate('/user/guest-list')}>Guest List</button>
+                <button style={btnStyle} onClick={() => navigate('/user/order-status')}>Order Status</button>
             </div>
-          </>
-        )}
-        <Outlet />
-      </main>
-    </div>
-  );
+
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button style={logOutBtnStyle} onClick={handleLogout}>LogOut</button>
+            </div>
+            <div style={{ marginTop: '80px' }}>
+                <Watermark />
+            </div>
+        </div>
+    );
+};
+
+const btnStyle = {
+    background: 'white',
+    border: '2px solid #a2c4c9',
+    padding: '12px 40px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    minWidth: '160px',
+    fontWeight: '500'
+};
+
+const dropdownItemStyle = {
+    padding: '12px 15px',
+    border: 'none',
+    background: 'white',
+    cursor: 'pointer',
+    textAlign: 'left',
+    fontSize: '0.9rem',
+    borderBottom: '1px solid #eee',
+    width: '100%',
+    transition: 'background 0.2s'
+};
+
+const logOutBtnStyle = {
+    background: '#4a76c5',
+    color: 'white',
+    border: 'none',
+    padding: '10px 60px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    marginTop: '20px'
 };
 
 export default UserDashboard;
