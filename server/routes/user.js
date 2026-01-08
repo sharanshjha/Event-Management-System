@@ -60,9 +60,30 @@ router.get('/vendors', async (req, res) => {
 // @route   POST /api/user/orders
 // @desc    Place an order
 // @access  User only
+// GET vendors by category
+router.get('/vendors/:category', protect, userOnly, async (req, res) => {
+  try {
+    const vendors = await User.find({ role: 'vendor', category: req.params.category })
+      .select('name email');
+    res.json(vendors);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET products by vendor
+router.get('/vendor-products/:vendorId', protect, userOnly, async (req, res) => {
+  try {
+    const products = await Product.find({ vendorId: req.params.vendorId, status: 'active' });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post('/orders', protect, userOnly, async (req, res) => {
   try {
-    const { items, paymentMethod, guestName, guestEmail } = req.body;
+    const { items, paymentMethod, guestName, guestEmail, shippingAddress } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: 'No items in order' });
@@ -97,6 +118,7 @@ router.post('/orders', protect, userOnly, async (req, res) => {
       paymentMethod,
       guestName,
       guestEmail,
+      shippingAddress,
       status: 'pending'
     });
 
@@ -175,6 +197,54 @@ router.delete('/orders/:id', protect, userOnly, async (req, res) => {
 
     await Order.findByIdAndDelete(req.params.id);
     res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   GET /api/user/addresses
+// @desc    Get user's addresses
+// @access  User only
+router.get('/addresses', protect, userOnly, async (req, res) => {
+  try {
+    const user = await req.user.constructor.findById(req.user._id);
+    res.json(user.addresses || []);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   POST /api/user/addresses
+// @desc    Add a new address
+// @access  User only
+router.post('/addresses', protect, userOnly, async (req, res) => {
+  try {
+    const user = await req.user.constructor.findById(req.user._id);
+    const newAddress = req.body;
+    
+    if (newAddress.isDefault) {
+      user.addresses.forEach(addr => addr.isDefault = false);
+    } else if (user.addresses.length === 0) {
+      newAddress.isDefault = true;
+    }
+
+    user.addresses.push(newAddress);
+    await user.save();
+    res.status(201).json(user.addresses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   DELETE /api/user/addresses/:id
+// @desc    Delete an address
+// @access  User only
+router.delete('/addresses/:id', protect, userOnly, async (req, res) => {
+  try {
+    const user = await req.user.constructor.findById(req.user._id);
+    user.addresses = user.addresses.filter(addr => addr._id.toString() !== req.params.id);
+    await user.save();
+    res.json(user.addresses);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

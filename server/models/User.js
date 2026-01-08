@@ -35,7 +35,23 @@ const userSchema = new mongoose.Schema({
     default: '6months'
   },
   membershipStart: Date,
-  membershipEnd: Date
+  membershipEnd: Date,
+  category: {
+    type: String,
+    enum: ['Catering', 'Florist', 'Decoration', 'Lighting', null],
+    default: null
+  },
+  addresses: [{
+    street: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: String,
+    isDefault: {
+      type: Boolean,
+      default: false
+    }
+  }]
 }, {
   timestamps: true
 });

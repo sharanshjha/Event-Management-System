@@ -40,6 +40,7 @@ router.post('/products', protect, vendorOnly, upload.single('image'), async (req
       description: description || '',
       image: req.file ? (req.file.path || req.file.secure_url || req.file.url || '') : '',
       vendorId: req.user._id,
+      category: req.user.category,
       status: 'active'
     });
 
@@ -159,6 +160,26 @@ router.get('/transactions', protect, vendorOnly, async (req, res) => {
     }).populate('userId', 'name email').sort('-createdAt');
 
     res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   PATCH /api/vendor/orders/:id/status
+// @desc    Update order status
+// @access  Vendor only
+router.patch('/orders/:id/status', protect, vendorOnly, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    order.status = status;
+    await order.save();
+    res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

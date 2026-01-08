@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['cash', 'upi'],
+    enum: ['cash', 'upi', 'card', 'netbanking'],
     required: true
   },
   status: {
@@ -34,6 +34,13 @@ const orderSchema = new mongoose.Schema({
   },
   guestName: String,
   guestEmail: String,
+  shippingAddress: {
+    street: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: String
+  },
   estimatedDeliveryDate: Date
 }, {
   timestamps: true

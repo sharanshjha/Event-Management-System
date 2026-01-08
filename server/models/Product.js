@@ -25,6 +25,11 @@ const productSchema = new mongoose.Schema({
     enum: ['active', 'pending', 'deleted'],
     default: 'active'
   },
+  category: {
+    type: String,
+    enum: ['Catering', 'Florist', 'Decoration', 'Lighting'],
+    required: true
+  },
   description: {
     type: String,
     default: ''

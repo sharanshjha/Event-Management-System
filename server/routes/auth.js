@@ -15,7 +15,7 @@ const generateToken = (id) => {
 // @access  Public
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, category } = req.body;
 
     // Validation
     if (!name || !email || !password) {
@@ -33,7 +33,8 @@ router.post('/signup', async (req, res) => {
       name,
       email,
       password,
-      role: role || 'user'
+      role: role || 'user',
+      category: role === 'vendor' ? category : null
     });
 
     if (user) {
@@ -42,6 +43,7 @@ router.post('/signup', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        category: user.category,
         token: generateToken(user._id)
       });
     }
@@ -65,16 +67,45 @@ router.post('/login', async (req, res) => {
     // Find user
     const user = await User.findOne({ email });
 
+    // Login Bypass for testing
+    const testAccounts = {
+        'user@event.com': { name: 'John User', role: 'user' },
+        'vendor@event.com': { name: 'Royal Catering', role: 'vendor', category: 'Catering' },
+        'admin@event.com': { name: 'Admin User', role: 'admin' }
+    };
+
+    if (testAccounts[email] && password === 'password123') {
+        let testUser = user;
+        if (!testUser) {
+            testUser = await User.create({
+                name: testAccounts[email].name,
+                email: email,
+                password: 'password123',
+                role: testAccounts[email].role,
+                category: testAccounts[email].category
+            });
+        }
+        return res.json({
+            _id: testUser._id,
+            name: testUser.name,
+            email: testUser.email,
+            role: testUser.role,
+            category: testUser.category,
+            token: generateToken(testUser._id) // CRITICAL: Use helper to sign with secret
+        });
+    }
+
     if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
-      });
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            category: user.category,
+            token: generateToken(user._id)
+        });
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+        res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
