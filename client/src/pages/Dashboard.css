@@ -6,11 +6,7 @@
 /* Dashboard Layout */
 .dashboard {
   min-height: 100vh;
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(67, 233, 123, 0.05) 0%, transparent 50%),
-    linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
+  background: var(--bg-primary);
   color: var(--text-primary);
   position: relative;
 }
@@ -31,7 +27,7 @@
 
 /* Navigation Bar */
 .dashboard-nav {
-  background: rgba(10, 10, 15, 0.8);
+  background: var(--bg-secondary);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 0.75rem 1rem;
@@ -469,7 +465,7 @@
   flex-direction: column;
   margin-bottom: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-secondary);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   transition: all var(--transition-normal);
@@ -487,7 +483,7 @@
   }
   
   .data-table tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-tertiary);
   }
 }
 
@@ -496,7 +492,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .data-table td::before {
@@ -652,7 +648,7 @@
   padding: 0.35rem 0.5rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
   color: var(--text-primary);
   font-size: 0.8rem;
   cursor: pointer;
@@ -702,7 +698,7 @@
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-secondary);
   color: var(--text-primary);
   font-size: 0.95rem;
   transition: all var(--transition-normal);
