@@ -60,21 +60,36 @@ router.get('/vendors', async (req, res) => {
 // @route   POST /api/user/orders
 // @desc    Place an order
 // @access  User only
-// GET vendors by category
-router.get('/vendors/:category', protect, userOnly, async (req, res) => {
+
+const User = require('../models/User');
+
+// GET vendors by category - PUBLIC (for browsing)
+// @route   GET /api/user/vendors/:category
+// @desc    Get all vendors in a specific category
+// @access  Public
+router.get('/vendors/:category', async (req, res) => {
   try {
-    const vendors = await User.find({ role: 'vendor', category: req.params.category })
-      .select('name email');
+    const vendors = await User.find({ 
+      role: 'vendor', 
+      category: req.params.category 
+    }).select('name email category membershipStatus membershipDuration');
+    
     res.json(vendors);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// GET products by vendor
-router.get('/vendor-products/:vendorId', protect, userOnly, async (req, res) => {
+// GET products by vendor - PUBLIC (for browsing)
+// @route   GET /api/user/vendor-products/:vendorId
+// @desc    Get all active products from a specific vendor
+// @access  Public
+router.get('/vendor-products/:vendorId', async (req, res) => {
   try {
-    const products = await Product.find({ vendorId: req.params.vendorId, status: 'active' });
+    const products = await Product.find({ 
+      vendorId: req.params.vendorId, 
+      status: 'active' 
+    });
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });

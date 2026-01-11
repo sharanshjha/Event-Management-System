@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { ThemeProvider } from './context/ThemeContext';
-import ThemeToggle from './components/ThemeToggle';
 import Watermark from './components/Watermark';
 
 // Auth Pages
@@ -44,19 +42,33 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return (
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        background: '#e0e0e0',
-        color: '#4a76c5'
+        background: '#0a0a0f',
+        color: '#667eea',
+        gap: '1rem'
       }}>
-        Loading...
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '3px solid rgba(102,126,234,0.2)',
+          borderTopColor: '#667eea',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+        <span>Loading...</span>
       </div>
     );
   }
 
-  if (!user) return <Navigate to="/login" />;
+  // Not logged in - redirect to login with return URL
+  if (!user) {
+    return <Navigate to="/login" state={{ from: window.location.pathname, message: 'Please login to access this page' }} />;
+  }
   
+  // Wrong role - show unauthorized page (NOT redirect to home)
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" />;
   }
@@ -174,10 +186,48 @@ const AppContent = () => {
             <UserOrders />
           </ProtectedRoute>
         } />
+        <Route path="/user/vendor-items/:vendorId" element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <VendorItemsView />
+          </ProtectedRoute>
+        } />
 
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* 404 Page - Show proper message, not redirect */}
+        <Route path="*" element={
+          <div style={{
+            minHeight: '100vh',
+            background: '#0a0a0f',
+            color: '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '2rem'
+          }}>
+            <span style={{ fontSize: '5rem', marginBottom: '1rem' }}>🔍</span>
+            <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Page Not Found</h1>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '2rem', maxWidth: '400px' }}>
+              The page you're looking for doesn't exist or may have been moved.
+            </p>
+            <button 
+              onClick={() => window.location.href = '/'}
+              style={{
+                padding: '0.85rem 2rem',
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                border: 'none',
+                borderRadius: '12px',
+                color: '#fff',
+                fontSize: '1rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              Go to Homepage
+            </button>
+          </div>
+        } />
       </Routes>
-      <ThemeToggle />
       {showWatermark && (
         <div style={{ position: 'fixed', bottom: '10px', left: '10px', pointerEvents: 'none', zIndex: 1000 }}>
           <Watermark />
@@ -189,15 +239,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </CartProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

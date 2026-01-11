@@ -1,11 +1,34 @@
+# Dependencies
 node_modules/
-.env
 server/node_modules/
 client/node_modules/
+
+# Environment
+.env
+*.env.local
+*.env.development
+*.env.production
+
+# Build outputs
 dist/
 build/
+
+# Agent & IDE
 .agent/
-.docs/
+.vscode/
+.idea/
+
+# Uploads (handled by Cloudinary)
 server/uploads/
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp

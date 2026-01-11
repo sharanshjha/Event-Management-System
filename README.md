@@ -1,95 +1,206 @@
-# 🌌 Nexus Event Management System
+# ✨ Nexus Event Management System v2.0
 
-![Banner](https://img.shields.io/badge/Status-Ultra--Premium-blue?style=for-the-badge&logo=rocket)
-![MERN](https://img.shields.io/badge/Stack-MERN-green?style=for-the-badge&logo=mongodb)
-![Cloudinary](https://img.shields.io/badge/Media-Cloudinary-orange?style=for-the-badge&logo=cloudinary)
-![JWT](https://img.shields.io/badge/Security-JWT-red?style=for-the-badge&logo=json-web-tokens)
+A premium **B2B2C Event Management Marketplace** built with the MERN stack. This platform connects event organizers with verified vendors across multiple service categories.
 
-> **Elevate your event planning experience.** Nexus is a high-performance, full-stack ecosystem designed to bridge the gap between users, vendors, and marketplace regulators. With a hyper-modern interface and a robust backend, management has never been this sleek.
-
----
-
-## 💎 Exclusive Features
-
-### 🌈 Hyper-Modern Dark Mode
-A meticulously crafted dark theme that isn't just an afterthought. Every border, shadow, and text element adapts dynamically to provide a premium, strain-free visual experience.
-
-### 👤 The User Odyssey
-- **Intuitive Discovery**: Browse a high-speed vendor marketplace with multi-category filters.
-- **Smart Cart Logic**: Advanced cart persistence and real-time total calculations.
-- **Vigilant Validation**: Bulletproof checkout logic ensuring 100% data accuracy (Strict 10-digit phone & 6-digit pin validation).
-- **Order Command Center**: Real-time tracking from receipt to delivery.
-
-### 🏪 The Vendor Forge
-- **Inventory Control**: Add, update, and manage your assets with ease.
-- **Cloud-Powered Media**: Seamlessly upload product images directly to Cloudinary.
-- **Transaction Radar**: Monitor every single sale and order detail in one centralized hub.
-- **Dynamic Status Updates**: Take control of the supply chain with granular order status management.
-
-### 👑 The Admin Zenith
-- **Global Oversight**: Monitor every user, vendor, and transaction across the entire platform.
-- **Membership Engineering**: Adjust vendor statuses and manage access tiers with a single click.
-- **Unified Management**: Delete redundant user data and maintain high system performance.
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Node](https://img.shields.io/badge/node-18%2B-brightgreen)
+![React](https://img.shields.io/badge/react-18-61DAFB)
 
 ---
 
-## 🛠️ The Tech Engine
+## 🚀 What's New in v2.0
 
-Nexus is powered by a high-octane **MERN Stack**:
+### Complete UI Revamp
+- **Glassmorphism Design** - Modern frosted glass aesthetic
+- **Premium Dark Theme** - Consistent dark mode across all pages
+- **Smooth Animations** - Fade-ins, slides, and micro-interactions
+- **Mobile Responsive** - Works on all screen sizes
 
-- **React 18** + **Vite**: For blindingly fast frontend performance.
-- **Node.js** & **Express**: A high-concurrency API server.
-- **MongoDB Atlas**: Scalable, cloud-native document storage.
-- **Cloudinary OSS**: Industrial-grade image management.
-- **JWT Protection**: Secured, state-of-the-art role-based access control.
+### Enhanced Features
+- **6 Payment Methods** - UPI, Cards, Net Banking, Wallets, EMI, Cash on Delivery
+- **Payment Simulation** - Realistic payment processing experience
+- **Password Strength Meter** - Real-time validation on signup
+- **Rate Limiting** - Protection against brute force attacks
+- **Indian-themed Data** - Realistic vendor and product data
+
+### Technical Improvements
+- Better error handling throughout
+- Improved authentication security
+- Clickable logo navigation on all pages
+- Proper 404 page instead of silent redirects
 
 ---
 
-## 🚀 Ignition Sequence
+## 🎯 Features
 
-### 1. Zero-Config Clone
+### 👤 For Users (Event Organizers)
+- Browse vendors by category (Catering, Florist, Decoration, Lighting)
+- Add products to cart from multiple vendors
+- Secure checkout with 6 payment options
+- Real-time order tracking
+- Guest list management
+
+### 🏪 For Vendors (Service Providers)
+- Product management dashboard
+- Order/transaction history
+- Product status tracking
+- Membership status display
+
+### 👑 For Admins
+- User & vendor management
+- Order status updates
+- Vendor membership control
+- Platform analytics
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 18 + Vite |
+| Backend | Node.js + Express |
+| Database | MongoDB Atlas |
+| Auth | JWT (JSON Web Tokens) |
+| Images | Cloudinary |
+| Styling | CSS (Premium Dark Theme) |
+
+---
+
+## ⚡ Quick Start
+
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- Cloudinary account
+
+### 1. Clone & Install
+
 ```bash
-git clone https://github.com/sharan-jha/Event-Management-System.git
-cd Event-Management-System
+# Clone the repository
+git clone https://github.com/yourusername/event-management-system.git
+cd event-management-system
+
+# Install server dependencies
+cd server
+npm install
+
+# Install client dependencies
+cd ../client
+npm install
 ```
 
-### 2. Neural Network Setup (Backend)
-Navigate to `/server` and create your `.env`:
+### 2. Configure Environment
+
+Create `server/.env`:
 ```env
-PORT=5001
-MONGODB_URI=your_atlas_uri
-JWT_SECRET=nexus_secret_key
-CLOUDINARY_CLOUD_NAME=your_name
-CLOUDINARY_API_KEY=your_key
-CLOUDINARY_API_SECRET=your_secret
+PORT=5002
+MONGODB_URI=mongodb+srv://your-connection-string
+JWT_SECRET=your-secret-key
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-### 3. Hyper-Installation
-```bash
-# Server Boost
-cd server && npm install
+### 3. Seed Database (Optional)
 
-# Client Boost
-cd ../client && npm install
+```bash
+cd server
+npm run seed
 ```
 
-### 4. Lift-Off
-```bash
-# Start the Backend
-cd server && npm run dev
+### 4. Start Development
 
-# Start the Frontend
-cd ../client && npm run dev
+```bash
+# Terminal 1 - Backend
+cd server
+npm run dev
+
+# Terminal 2 - Frontend
+cd client
+npm run dev
+```
+
+### 5. Open in Browser
+- Frontend: http://localhost:5173
+- Backend: http://localhost:5002
+
+---
+
+## 🔐 Demo Accounts
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@event.com | password123 |
+| Vendor | vendor@event.com | password123 |
+| User | user@event.com | password123 |
+
+---
+
+## 📁 Project Structure
+
+```
+Event Management System/
+├── client/                 # React Frontend
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── context/        # Auth & Cart context
+│   │   ├── pages/          # All page components
+│   │   ├── services/       # API service layer
+│   │   └── index.css       # Global styles
+│   └── package.json
+│
+├── server/                 # Node.js Backend
+│   ├── config/             # DB & Cloudinary config
+│   ├── middleware/         # Auth middleware
+│   ├── models/             # MongoDB schemas
+│   ├── routes/             # API routes
+│   ├── seedData.js         # Database seeder
+│   └── server.js           # Entry point
+│
+└── README.md
 ```
 
 ---
 
-## 🎨 Design Philosophy
-Nexus follows a **Glassmorphism & High-Contrast** aesthetic. Our goal was to create a UI that feels "alive"—buttons that react to your touch, containers that glow, and a flow that moves at the speed of thought.
+## 💳 Payment Methods
+
+| Method | Description |
+|--------|-------------|
+| 💵 Cash on Delivery | Pay when you receive |
+| 📱 UPI | Google Pay, PhonePe, Paytm |
+| 💳 Credit/Debit Card | Visa, Mastercard, RuPay |
+| 🏦 Net Banking | All major Indian banks |
+| 👛 Wallets | Amazon Pay, Paytm, etc. |
+| 📊 EMI | 3/6/9/12 month options |
+
+> Note: Payment simulation is enabled for demo purposes.
 
 ---
 
-## 📢 Note to Users
-> "Silly mistakes are for those who don't care. Nexus is built for those who demand perfection."
+## 🤝 Contributing
 
-Created with ⚡ by [Sharansh](https://github.com/sharansh-jha)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**Sharansh Jha**
+
+---
+
+<p align="center">
+  <strong>⭐ Star this repo if you found it helpful!</strong>
+</p>
