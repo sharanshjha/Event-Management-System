@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema({
     enum: ['Catering', 'Florist', 'Decoration', 'Lighting', null],
     default: null
   },
+  profileImage: {
+    type: String,
+    default: ''
+  },
   addresses: [{
     street: String,
     city: String,

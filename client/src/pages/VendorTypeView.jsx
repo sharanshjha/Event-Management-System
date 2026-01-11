@@ -125,11 +125,27 @@ const VendorTypeView = () => {
                                 >
                                     <div style={{
                                         ...styles.vendorHeader,
-                                        background: getCategoryGradient(category)
+                                        background: vendor.profileImage ? 'transparent' : getCategoryGradient(category),
+                                        padding: vendor.profileImage ? 0 : '2rem',
+                                        height: vendor.profileImage ? '180px' : 'auto',
+                                        position: 'relative'
                                     }}>
-                                        <span style={styles.vendorIcon}>{getCategoryEmoji(category)}</span>
+                                        {vendor.profileImage ? (
+                                            <img 
+                                                src={vendor.profileImage} 
+                                                alt={vendor.name} 
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                            />
+                                        ) : (
+                                            <span style={styles.vendorIcon}>{getCategoryEmoji(category)}</span>
+                                        )}
                                         {vendor.membershipStatus === 'active' && (
-                                            <span style={styles.verifiedBadge}>✓ Verified</span>
+                                            <span style={{
+                                                ...styles.verifiedBadge,
+                                                position: 'absolute',
+                                                top: '1rem',
+                                                right: '1rem'
+                                            }}>✓ Verified</span>
                                         )}
                                     </div>
                                     <div style={styles.vendorBody}>

@@ -94,7 +94,15 @@ const VendorItemsView = () => {
                         background: `${categoryInfo.gradient.replace('100%)', '15%)')}`
                     }}>
                         <div style={styles.vendorInfo}>
-                            <span style={styles.vendorIcon}>{categoryInfo.emoji}</span>
+                            {vendor.profileImage ? (
+                                <img 
+                                    src={vendor.profileImage} 
+                                    alt={vendor.name} 
+                                    style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #667eea' }} 
+                                />
+                            ) : (
+                                <span style={styles.vendorIcon}>{categoryInfo.emoji}</span>
+                            )}
                             <div style={styles.vendorDetails}>
                                 <h1 style={styles.vendorName}>{vendor.name || 'Vendor'}</h1>
                                 <p style={styles.vendorCategory}>{category} Services</p>
