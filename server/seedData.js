@@ -6,13 +6,15 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
+// Fix: Load .env from the server directory explicitly
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Import models
 const User = require('./models/User');
 const Product = require('./models/Product');
 const fs = require('fs');
-const path = require('path');
+
 
 // Try to load robust images from map
 let imageMap = {};
